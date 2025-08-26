@@ -1,7 +1,8 @@
 import 'package:get/get.dart';
-import 'package:yt_ecommerce_admin_panel/app.dart';
 import 'package:yt_ecommerce_admin_panel/features/authentication/screens/forgot_password/forgot_password_screen.dart';
 import 'package:yt_ecommerce_admin_panel/features/authentication/screens/reset_password/reset_password_screen.dart';
+import 'package:yt_ecommerce_admin_panel/features/dashboard/dashboard_screen.dart';
+import 'package:yt_ecommerce_admin_panel/routes/route_middle_ware.dart';
 import 'package:yt_ecommerce_admin_panel/routes/routes.dart';
 
 import '../features/authentication/screens/login/login_screen.dart';
@@ -14,6 +15,8 @@ class TAppRoutes {
     GetPage(
         name: TRoutes.resetPassword, page: () => const ResetPasswordScreen()),
     GetPage(
-        name: TRoutes.dashboard, page: () => const ResponsiveDesignScreen()),
+        name: TRoutes.dashboard,
+        page: () => const DashboardScreen(),
+        middlewares: [TRouteMiddleware()]),
   ];
 }

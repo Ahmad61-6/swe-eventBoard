@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:yt_ecommerce_admin_panel/bindings/general_bindings.dart';
 import 'package:yt_ecommerce_admin_panel/common/widgets/layout/tamplates/site_layout.dart';
 import 'package:yt_ecommerce_admin_panel/routes/app_routes.dart';
 import 'package:yt_ecommerce_admin_panel/routes/routes.dart';
@@ -33,6 +34,7 @@ class App extends StatelessWidget {
       scrollBehavior: MyCustomScrollBehavior(),
       getPages: TAppRoutes.pages,
       initialRoute: TRoutes.login,
+      initialBinding: GeneralBindings(),
       unknownRoute: GetPage(
           name: '/page-not-found',
           page: () => const Scaffold(
