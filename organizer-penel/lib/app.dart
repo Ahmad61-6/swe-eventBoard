@@ -32,7 +32,7 @@ class App extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       scrollBehavior: MyCustomScrollBehavior(),
       getPages: TAppRoutes.pages,
-      initialRoute: TRoutes.dashboard,
+      initialRoute: TRoutes.login,
       unknownRoute: GetPage(
           name: '/page-not-found',
           page: () => const Scaffold(

@@ -6,7 +6,7 @@ class TRouteMiddleware extends GetMiddleware {
   @override
   RouteSettings? redirect(String? route) {
     print('.......................Middleware Called..........................');
-    bool isAuthenticated = true; // Replace with your auth logic
-    return isAuthenticated ? null : RouteSettings(name: TRoutes.dashboard);
+    bool isAuthenticated = false; // Replace with your auth logic
+    return isAuthenticated ? null : RouteSettings(name: TRoutes.login);
   }
 }
