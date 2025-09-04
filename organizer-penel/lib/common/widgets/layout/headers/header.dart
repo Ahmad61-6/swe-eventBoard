@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:yt_ecommerce_admin_panel/common/widgets/images/t_rounded_image.dart';
+import 'package:yt_ecommerce_admin_panel/common/widgets/shimmers/shimmer.dart';
+import 'package:yt_ecommerce_admin_panel/features/authentication/controllers/user_controller.dart';
 import 'package:yt_ecommerce_admin_panel/utils/constants/colors.dart';
 import 'package:yt_ecommerce_admin_panel/utils/device/device_utility.dart';
 
@@ -14,6 +17,7 @@ class THeader extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = UserController.instance;
     return Container(
       decoration: const BoxDecoration(
           color: TColors.white,
@@ -47,32 +51,45 @@ class THeader extends StatelessWidget implements PreferredSizeWidget {
 
           //user data
           Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const TRoundedImage(
-                  width: 40,
-                  height: 40,
-                  padding: 2,
-                  imageType: ImageType.asset,
-                  image: TImages.user),
+              Obx(
+                () => TRoundedImage(
+                    width: 40,
+                    height: 40,
+                    padding: 2,
+                    imageType: controller.user.value.profileImage.isNotEmpty
+                        ? ImageType.network
+                        : ImageType.asset,
+                    image: controller.user.value.profileImage.isNotEmpty
+                        ? controller.user.value.profileImage
+                        : TImages.user),
+              ),
               const SizedBox(
                 width: TSizes.sm,
               ),
 
               //name and email
               if (!TDeviceUtils.isMobileScreen(context))
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Ahmad bin mijanur rahman',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    Text(
-                      'ahmadbinmijanurrahman.com',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                  ],
+                Obx(
+                  () => Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      controller.loading.value
+                          ? const TShimmerEffect(width: 50, height: 13)
+                          : Text(
+                              controller.user.value.orgName,
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
+                      controller.loading.value
+                          ? const TShimmerEffect(width: 50, height: 13)
+                          : Text(
+                              controller.user.value.email,
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
+                    ],
+                  ),
                 )
             ],
           )

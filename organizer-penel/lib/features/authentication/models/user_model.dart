@@ -22,6 +22,18 @@ class UserModel {
     this.createdAt,
     this.updatedAt,
   });
+  factory UserModel.empty() {
+    return UserModel(
+      id: null,
+      orgName: '',
+      email: '',
+      phone: '',
+      profileImage: '',
+      role: AppRole.user,
+      createdAt: null,
+      updatedAt: null,
+    );
+  }
 
   String get orgNameToDisplay => orgName;
   String get formattedDate => TFormatter.formatDate(createdAt);

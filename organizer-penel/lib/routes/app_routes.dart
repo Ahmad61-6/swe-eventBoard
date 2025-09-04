@@ -6,6 +6,7 @@ import 'package:yt_ecommerce_admin_panel/routes/route_middle_ware.dart';
 import 'package:yt_ecommerce_admin_panel/routes/routes.dart';
 
 import '../features/authentication/screens/login/login_screen.dart';
+import '../features/events/screens/create_event_screen.dart';
 
 class TAppRoutes {
   static List<GetPage> pages = [
@@ -14,9 +15,31 @@ class TAppRoutes {
         name: TRoutes.forgotPassword, page: () => const ForgotPasswordScreen()),
     GetPage(
         name: TRoutes.resetPassword, page: () => const ResetPasswordScreen()),
+
+    // Authenticated Routes
     GetPage(
         name: TRoutes.dashboard,
         page: () => const DashboardScreen(),
         middlewares: [TRouteMiddleware()]),
+    GetPage(
+        name: TRoutes.createEvent,
+        page: () => const CreateEventScreen(),
+        middlewares: [TRouteMiddleware()]),
+    // GetPage(
+    //     name: TRoutes.manageEvents,
+    //     page: () => const ManageEventsScreen(),
+    //     middlewares: [TRouteMiddleware()]),
+    // GetPage(
+    //     name: TRoutes.participants,
+    //     page: () => const ParticipantsScreen(),
+    //     middlewares: [TRouteMiddleware()]),
+    // GetPage(
+    //     name: TRoutes.notification,
+    //     page: () => const NotificationScreen(),
+    //     middlewares: [TRouteMiddleware()]),
+    // GetPage(
+    //     name: TRoutes.profile,
+    //     page: () => const ProfileScreen(),
+    //     middlewares: [TRouteMiddleware()]),
   ];
 }

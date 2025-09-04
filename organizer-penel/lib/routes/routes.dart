@@ -8,10 +8,17 @@ class TRoutes {
   static const createEvent = '/createEvent';
   static const editEvent = '/editEvent';
   static const profile = '/profile';
+  static const manageEvents = '/manage-events';
+  static const participants = '/participants';
+  static const notification = '/notification';
 
   static List sidebarMenuItems = [
     dashboard,
     events,
     createEvent,
+    manageEvents,
+    participants,
+    notification,
+    profile,
   ];
 }

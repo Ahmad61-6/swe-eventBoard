@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:yt_ecommerce_admin_panel/routes/routes.dart';
 import 'package:yt_ecommerce_admin_panel/utils/exceptions/firebase_auth_exceptions.dart';
 import 'package:yt_ecommerce_admin_panel/utils/exceptions/firebase_exceptions.dart';
 import 'package:yt_ecommerce_admin_panel/utils/exceptions/format_exceptions.dart';
@@ -21,6 +22,16 @@ class AuthenticationRepository extends GetxController {
   @override
   void onReady() {
     _auth.setPersistence(Persistence.LOCAL);
+  }
+
+  void screenRedirect() async {
+    final user = _auth.currentUser;
+
+    if (user != null) {
+      Get.offAllNamed(TRoutes.dashboard);
+    } else {
+      Get.offAllNamed(TRoutes.login);
+    }
   }
 
   //login
@@ -64,6 +75,19 @@ class AuthenticationRepository extends GetxController {
 
   //logout
   Future<void> logout() async {
-    await _auth.signOut();
+    try {
+      await _auth.signOut();
+      Get.offAllNamed(TRoutes.login);
+    } on FirebaseAuthException catch (e) {
+      throw TFirebaseAuthException(e.code).message;
+    } on FirebaseException catch (e) {
+      throw TFirebaseException(e.code).message;
+    } on FormatException catch (_) {
+      throw const TFormatException();
+    } on PlatformException catch (e) {
+      throw TPlatformException(e.code).message;
+    } catch (e) {
+      throw 'Something went wrong. Please try again later.';
+    }
   }
 }
