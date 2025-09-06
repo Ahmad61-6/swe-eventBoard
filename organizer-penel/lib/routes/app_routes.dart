@@ -29,7 +29,7 @@ class TAppRoutes {
     //     name: TRoutes.manageEvents,
     //     page: () => const ManageEventsScreen(),
     //     middlewares: [TRouteMiddleware()]),
-    // GetPage(
+    // // GetPage(
     //     name: TRoutes.participants,
     //     page: () => const ParticipantsScreen(),
     //     middlewares: [TRouteMiddleware()]),

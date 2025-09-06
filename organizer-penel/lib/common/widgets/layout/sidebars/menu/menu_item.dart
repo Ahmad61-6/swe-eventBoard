@@ -1,3 +1,4 @@
+// In TMenuItem widget, replace the onTap method:
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yt_ecommerce_admin_panel/common/widgets/layout/sidebars/sidebar_controller.dart';
@@ -15,11 +16,13 @@ class TMenuItem extends StatelessWidget {
   final String route;
   final String itemName;
   final IconData icon;
+
   @override
   Widget build(BuildContext context) {
     final menuController = Get.put(SideBarController());
     return InkWell(
-      onTap: () => menuController.changeActiveItem(route),
+      onTap: () => menuController
+          .menuOnTap(route), // Use menuOnTap instead of changeActiveItem
       onHover: (hovering) => hovering
           ? menuController.changeHoverItem(route)
           : menuController.changeHoverItem(''),

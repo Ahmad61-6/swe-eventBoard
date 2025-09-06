@@ -1,163 +1,145 @@
+// app.dart
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:yt_ecommerce_admin_panel/bindings/general_bindings.dart';
-import 'package:yt_ecommerce_admin_panel/common/widgets/layout/tamplates/site_layout.dart';
 import 'package:yt_ecommerce_admin_panel/routes/app_routes.dart';
 import 'package:yt_ecommerce_admin_panel/routes/routes.dart';
+import 'package:yt_ecommerce_admin_panel/utils/constants/text_strings.dart';
+import 'package:yt_ecommerce_admin_panel/utils/device/web_material_scroll.dart';
+import 'package:yt_ecommerce_admin_panel/utils/theme/theme.dart';
 
-import 'utils/constants/text_strings.dart';
-import 'utils/device/web_material_scroll.dart';
-import 'utils/theme/theme.dart';
-
-class App extends StatelessWidget {
+class App extends StatefulWidget {
   const App({super.key});
 
-  static final Uri _productUri =
-      Uri.parse('https://codingwitht.com/ecommerce-app-with-admin-panel/');
+  @override
+  State<App> createState() => _AppState();
+}
 
-  Future<void> _openProductPage() async {
-    // On web this will open a new tab automatically
-    if (!await launchUrl(_productUri, webOnlyWindowName: '_blank')) {
-      debugPrint('Could not launch $_productUri');
+class _AppState extends State<App> {
+  // Future to determine the initial route based on auth state
+  late Future<String> _initialRouteFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _initialRouteFuture = _determineInitialRoute();
+  }
+
+  /// Determines the initial route by checking Firebase Auth and GetStorage
+  Future<String> _determineInitialRoute() async {
+    debugPrint("App Start - Determining Initial Route...");
+
+    // 1. Check Firebase Authentication State First (Most Reliable Persistent State)
+    final User? firebaseUser = FirebaseAuth.instance.currentUser;
+    debugPrint(
+        "App Start - Firebase Auth User Present: ${firebaseUser != null}");
+
+    if (firebaseUser != null) {
+      // User is logged in according to Firebase
+      debugPrint(
+          "App Start - Firebase Auth indicates user is logged in (${firebaseUser.uid}). Redirecting to Dashboard.");
+      // Ensure GetStorage flag is also set for consistency (in case it was cleared)
+      if (!(GetStorage().read('user_logged_in') ?? false)) {
+        GetStorage().write('user_logged_in', true);
+        debugPrint(
+            "App Start - Synced 'user_logged_in' flag in GetStorage based on Firebase state.");
+      }
+      return TRoutes.dashboard;
     }
+
+    // 2. If Firebase says no user, check the GetStorage flag (Fallback/Secondary Check)
+    final bool? storageLoggedInFlag = GetStorage().read('user_logged_in');
+    debugPrint(
+        "App Start - Firebase Auth User NOT present. Checking GetStorage flag: $storageLoggedInFlag");
+
+    if (storageLoggedInFlag == true) {
+      // GetStorage says user was logged in, but Firebase doesn't.
+      // This could happen if they manually signed out via Firebase, or data inconsistency.
+      // For robustness, let's prioritize Firebase state. If Firebase says logged out,
+      // we should probably treat them as logged out, even if the flag says otherwise.
+      // However, if you want to be extra lenient, you could redirect to dashboard here.
+      // Let's be strict and redirect to login if Firebase doesn't confirm the user.
+      debugPrint(
+          "App Start - GetStorage flag is true, but Firebase Auth is false. Prioritizing Firebase. Redirecting to Login.");
+      // Optional: Clear the potentially stale flag
+      // GetStorage().remove('user_logged_in');
+      // GetStorage().remove('REMEMBER_ME_EMAIL');
+      // GetStorage().remove('REMEMBER_ME_PASSWORD');
+    } else {
+      debugPrint(
+          "App Start - GetStorage flag is false or null. Redirecting to Login.");
+    }
+
+    // Default to login if neither source confirms a logged-in user
+    return TRoutes.login;
   }
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      title: TTexts.appName,
-      themeMode: ThemeMode.light,
-      theme: TAppTheme.lightTheme,
-      darkTheme: TAppTheme.darkTheme,
-      debugShowCheckedModeBanner: false,
-      scrollBehavior: MyCustomScrollBehavior(),
-      getPages: TAppRoutes.pages,
-      initialRoute: TRoutes.login,
-      initialBinding: GeneralBindings(),
-      unknownRoute: GetPage(
-          name: '/page-not-found',
-          page: () => const Scaffold(
-                body: Center(
-                  child: Text('Page not found'),
-                ),
-              )),
-      // home: Scaffold(
-      //   backgroundColor: TColors.primary,
-      //   body: Center(
-      //     child: Padding(
-      //       padding: const EdgeInsets.symmetric(horizontal: 32.0),
-      //       child: Column(
-      //         mainAxisSize: MainAxisSize.min,
-      //         children: [
-      //           const Text(
-      //             '🎉 Starter Kit Ready! 🎉\n\n'
-      //             'Your project structure is set up and running. Happy coding!',
-      //             textAlign: TextAlign.center,
-      //             style: TextStyle(
-      //               color: Colors.white,
-      //               fontSize: 20,
-      //               height: 1.5,
-      //               fontWeight: FontWeight.w500,
-      //             ),
-      //           ),
-      //           const SizedBox(height: 40),
-      //           MouseRegion(
-      //             cursor: SystemMouseCursors.click,
-      //             child: GestureDetector(
-      //               onTap: _openProductPage,
-      //               child: Container(
-      //                 padding: const EdgeInsets.symmetric(
-      //                     horizontal: 28, vertical: 14),
-      //                 decoration: BoxDecoration(
-      //                   color: Colors.white,
-      //                   borderRadius: BorderRadius.circular(8),
-      //                 ),
-      //                 child: const Row(
-      //                   mainAxisSize: MainAxisSize.min,
-      //                   children: [
-      //                     Icon(Icons.shopping_cart_outlined,
-      //                         color: TColors.primary),
-      //                     SizedBox(width: 8),
-      //                     Text(
-      //                       'Get the Full E-Commerce App',
-      //                       style: TextStyle(
-      //                         color: TColors.primary,
-      //                         fontSize: 16,
-      //                         fontWeight: FontWeight.bold,
-      //                       ),
-      //                     ),
-      //                   ],
-      //                 ),
-      //               ),
-      //             ),
-      //           ),
-      //         ],
-      //       ),
-      //     ),
-      //   ),
-      // ),
-    );
-  }
-}
+    return FutureBuilder<String>(
+      future: _initialRouteFuture, // The future that determines the route
+      builder: (context, snapshot) {
+        // Handle loading state while determining the route
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          // Show a simple loading screen while checking auth state
+          return const MaterialApp(
+            home: Scaffold(
+              body: Center(
+                child:
+                    CircularProgressIndicator(), // Or any loading widget you prefer
+              ),
+            ),
+          );
+        }
 
-class ResponsiveDesignScreen extends StatelessWidget {
-  const ResponsiveDesignScreen({super.key});
+        // Handle potential errors during the check (unlikely, but good practice)
+        if (snapshot.hasError) {
+          debugPrint(
+              "App Start - Error determining initial route: ${snapshot.error}");
+          // Fallback to login on error
+          return GetMaterialApp(
+            title: TTexts.appName,
+            themeMode: ThemeMode.light,
+            theme: TAppTheme.lightTheme,
+            darkTheme: TAppTheme.darkTheme,
+            debugShowCheckedModeBanner: false,
+            scrollBehavior: MyCustomScrollBehavior(),
+            getPages: TAppRoutes.pages,
+            initialRoute: TRoutes.login, // Fallback to login
+            initialBinding: GeneralBindings(),
+            unknownRoute: GetPage(
+              name: '/page-not-found',
+              page: () => const Scaffold(
+                body: Center(child: Text('Error loading app')),
+              ),
+            ),
+          );
+        }
 
-  @override
-  Widget build(BuildContext context) {
-    return TSiteTemplate(
-      desktop: Desktop(),
-      tablet: Tablet(),
-      mobile: Mobile(),
-    );
-  }
-}
+        // Once the future completes successfully, build the main GetMaterialApp
+        final String initialRoute =
+            snapshot.data ?? TRoutes.login; // Use result or default to login
 
-class Desktop extends StatelessWidget {
-  const Desktop({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Row(
-        children: [
-          const Expanded(child: Drawer()),
-          Expanded(
-            flex: 5,
-            child: Column(
-              children: [
-                const Placeholder(),
-                const SizedBox(height: 20), // Provide a height for the SizedBox
-              ],
+        return GetMaterialApp(
+          title: TTexts.appName,
+          themeMode: ThemeMode.light,
+          theme: TAppTheme.lightTheme,
+          darkTheme: TAppTheme.darkTheme,
+          debugShowCheckedModeBanner: false,
+          scrollBehavior: MyCustomScrollBehavior(),
+          getPages: TAppRoutes.pages,
+          initialRoute: initialRoute, // Use the determined route
+          initialBinding: GeneralBindings(),
+          unknownRoute: GetPage(
+            name: '/page-not-found',
+            page: () => const Scaffold(
+              body: Center(child: Text('Page not found')),
             ),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class Tablet extends StatelessWidget {
-  const Tablet({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Tablet Layout')),
-      body: const Placeholder(),
-    );
-  }
-}
-
-class Mobile extends StatelessWidget {
-  const Mobile({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Mobile Layout')),
-      body: const Placeholder(),
+        );
+      },
     );
   }
 }

@@ -26,11 +26,11 @@ class LoginController extends GetxController {
   void onInit() {
     final savedEmail = localStorage.read('REMEMBER_ME_EMAIL') ?? '';
     final savedPassword = localStorage.read('REMEMBER_ME_PASSWORD') ?? '';
-    // if (savedEmail != null && savedPassword != null) {
-    //   emailTEController.text = savedEmail;
-    //   passwordTEController.text = savedPassword;
-    //   rememberMe.value = true;
-    // }
+    if (savedEmail != null && savedPassword != null) {
+      emailTEController.text = savedEmail;
+      passwordTEController.text = savedPassword;
+      rememberMe.value = true;
+    }
     super.onInit();
   }
 
@@ -54,6 +54,7 @@ class LoginController extends GetxController {
         localStorage.write(
             'REMEMBER_ME_PASSWORD', passwordTEController.text.trim());
       }
+
       await AuthenticationRepository.instance.loginWithEmailAndPassword(
           emailTEController.text.trim(), passwordTEController.text.trim());
 
@@ -66,6 +67,10 @@ class LoginController extends GetxController {
             message: 'You do not have admin privileges. contact Admin');
         await AuthenticationRepository.instance.logout();
       } else {
+        // Save session to local storage after successful login
+        GetStorage().write('user_logged_in', true); // <-- This is correct
+        debugPrint(
+            "Login Successful: 'user_logged_in' flag set to true in GetStorage");
         AuthenticationRepository.instance.screenRedirect();
       }
     } catch (e) {
@@ -73,7 +78,6 @@ class LoginController extends GetxController {
       TLoaders.errorSnackBar(title: 'oh snap', message: e.toString());
       debugPrint(e.toString());
     }
-    // Add your sign-in logic here
   }
 
   //handle registration of admin user

@@ -3,8 +3,8 @@ import 'package:yt_ecommerce_admin_panel/utils/constants/sizes.dart';
 
 import '../widgets/create_event_form.dart';
 
-class CreateEventDesktopScreen extends StatelessWidget {
-  const CreateEventDesktopScreen({super.key});
+class CreateEventTabletScreen extends StatelessWidget {
+  const CreateEventTabletScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +14,7 @@ class CreateEventDesktopScreen extends StatelessWidget {
         child: Center(
           child: Container(
             constraints: const BoxConstraints(
-                maxWidth: 600), // Center and limit width on large screens
+                maxWidth: 500), // Slightly smaller than desktop
             child: const TCreateEventForm(),
           ),
         ),
